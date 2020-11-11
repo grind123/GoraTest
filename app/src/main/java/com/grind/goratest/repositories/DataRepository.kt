@@ -2,7 +2,7 @@ package com.grind.goratest.repositories
 
 import android.util.Log
 import com.grind.goratest.models.Album
-import com.grind.goratest.models.Photo
+import com.grind.goratest.models.Picture
 import com.grind.goratest.models.User
 import com.grind.goratest.utils.MySSLVerifier
 import org.json.JSONArray
@@ -59,12 +59,12 @@ class DataRepository {
         return resultList
     }
 
-    private fun parsePhotos(jsonData: String): List<Photo>{
-        val resultList = mutableListOf<Photo>()
+    private fun parsePhotos(jsonData: String): List<Picture>{
+        val resultList = mutableListOf<Picture>()
         val usersJsonArray = JSONArray(jsonData)
         for(i in 0 until usersJsonArray.length()){
             val albumJsonObject = usersJsonArray.get(i) as JSONObject
-            val album = Photo(
+            val album = Picture(
                 id = albumJsonObject.getInt("id"),
                 title = albumJsonObject.getString("title"),
                 url = albumJsonObject.getString("url"),
@@ -110,8 +110,8 @@ class DataRepository {
         return resultList
     }
 
-    fun getPhotosListByAlbumId(albumId: Int): List<Photo>? {
-        var resultList: List<Photo>? = null
+    fun getPhotosListByAlbumId(albumId: Int): List<Picture>? {
+        var resultList: List<Picture>? = null
         val thread = Thread(Runnable {
             val connection = configureHttpsConnection("$BASE_URL/photos?albumId=$albumId")
             connection.connect()

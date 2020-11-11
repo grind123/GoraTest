@@ -7,4 +7,5 @@
 
     <color name="abBackground">#f7f7f7</color>
     <color name="separator_line">#efeef0</color>
+    <color name="blue_button">#0a60ff</color>
 </resources>

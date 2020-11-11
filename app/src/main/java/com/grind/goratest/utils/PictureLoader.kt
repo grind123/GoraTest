@@ -5,23 +5,22 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Environment
+import android.os.Handler
 import android.util.Log
 import android.webkit.WebView
-import androidx.core.content.ContextCompat
-import com.grind.goratest.App
 import com.grind.goratest.db.SqlDbHelper
-import com.grind.goratest.models.Photo
+import com.grind.goratest.models.Picture
 import java.io.File
-import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-class PictureLoader(private val activity: Activity) {
+class PictureLoader(private val context: Context) {
+    companion object{
+        private const val userAgentString = "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
+    }
 
     private fun loadPictureFromUrl(url: String): ByteArray?{
         var result: ByteArray? = null
-        val userAgentString = WebView(activity).settings.userAgentString
         val thread = Thread(Runnable {
             val connection = URL(url).openConnection() as HttpsURLConnection
             connection.setRequestProperty("User-Agent",
@@ -45,7 +44,7 @@ class PictureLoader(private val activity: Activity) {
 
     private fun savePictureToCache(byteArray: ByteArray): File {
         val fileName = "${System.currentTimeMillis()}_image.jpg"
-        val folder = File("${activity.externalCacheDir?.absolutePath}/photos")
+        val folder = File("${context.externalCacheDir?.absolutePath}/photos")
         folder.mkdirs()
         val file = File("${folder.absolutePath}/${fileName}")
         file.createNewFile()
@@ -55,7 +54,7 @@ class PictureLoader(private val activity: Activity) {
 
 
     private fun saveInfoToDb(photoId: Int, title: String, filePath: String) : Long{
-        val dbHelper = SqlDbHelper(activity)
+        val dbHelper = SqlDbHelper(context)
         val db = dbHelper.writableDatabase
         val contentValues = ContentValues().apply {
             put("_id", photoId)
@@ -70,7 +69,7 @@ class PictureLoader(private val activity: Activity) {
     }
 
     private fun getPictureFileFromCache(photoId: Int): File?{
-        val dbHelper = SqlDbHelper(activity)
+        val dbHelper = SqlDbHelper(context)
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery(
             "select * from ${SqlDbHelper.MAIN_TABLE_NAME} where _id = ?",
@@ -91,16 +90,16 @@ class PictureLoader(private val activity: Activity) {
 
 
 
-    fun getPicture(photo: Photo): Bitmap?{
-        val fromCache = getPictureFileFromCache(photo.id)
+    fun getPicture(picture: Picture): Bitmap?{
+        val fromCache = getPictureFileFromCache(picture.id)
         if(fromCache != null){
             Log.i("PictureLoader", "FROM CACHE")
             return decodeBitmapImage(fromCache)
         }
-        val pictureByteArray = loadPictureFromUrl(photo.url)
+        val pictureByteArray = loadPictureFromUrl(picture.url)
         if(pictureByteArray != null){
             val pictureFile = savePictureToCache(pictureByteArray)
-            saveInfoToDb(photo.id, photo.title, pictureFile.absolutePath)
+            saveInfoToDb(picture.id, picture.title, pictureFile.absolutePath)
             Log.i("PictureLoader", "FROM WEB")
             return decodeBitmapImage(pictureByteArray)
         } else {

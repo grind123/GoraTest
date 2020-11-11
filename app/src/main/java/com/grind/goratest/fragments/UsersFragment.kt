@@ -14,6 +14,7 @@ import com.grind.goratest.App
 import com.grind.goratest.R
 import com.grind.goratest.adapters.UsersAdapter
 import com.grind.goratest.models.User
+import com.grind.goratest.replaceFragment
 import com.grind.goratest.viewmodels.UsersViewModel
 
 class UsersFragment: Fragment() {
@@ -51,9 +52,13 @@ class UsersFragment: Fragment() {
     private fun configureRecyclerView(rv: RecyclerView){
         rv.adapter = UsersAdapter(object : UsersAdapter.OnUserClickListener{
             override fun onUserClick(user: User) {
-                Log.i("UserClick", "$user")
+                val fragment = PicturesFragment().apply {
+                    arguments = Bundle().apply { putInt("userId", user.id) }
+                }
+                replaceFragment(fragment, true)
             }
         })
+
         rv.layoutManager = LinearLayoutManager(context)
     }
 }

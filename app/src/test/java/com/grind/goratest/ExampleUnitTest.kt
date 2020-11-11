@@ -1,8 +1,5 @@
 package com.grind.goratest
 
-import android.util.Log
-import com.grind.goratest.models.Photo
-import com.grind.goratest.utils.PictureLoader
 import org.junit.Test
 
 import org.junit.Assert.*

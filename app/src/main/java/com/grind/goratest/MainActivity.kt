@@ -1,20 +1,11 @@
 package com.grind.goratest
 
-import android.Manifest
-import android.app.Activity
-import android.content.pm.PackageManager
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.grind.goratest.fragments.UsersFragment
-import com.grind.goratest.models.Photo
-import com.grind.goratest.repositories.DataRepository
-import com.grind.goratest.utils.PictureLoader
-import java.security.Permission
-import java.security.Permissions
 
 fun AppCompatActivity.replaceFragment(fragment: Fragment, addToBackStack: Boolean){
     val transaction = supportFragmentManager.beginTransaction()
@@ -34,6 +25,10 @@ fun Fragment.replaceFragment(fragment: Fragment, addToBackStack: Boolean){
     if(addToBackStack) transaction?.addToBackStack(fragment::class.java.simpleName)
 
     transaction?.commitAllowingStateLoss()
+}
+
+fun Int.toDp(context: Context): Int{
+    return (this * context.resources.displayMetrics.density).toInt()
 }
 
 class MainActivity : AppCompatActivity() {

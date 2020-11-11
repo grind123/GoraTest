@@ -1,6 +1,6 @@
 package com.grind.goratest.models
 
-data class Photo(
+data class Picture(
     val albumId: Int,
     val id: Int,
     val title: String,
