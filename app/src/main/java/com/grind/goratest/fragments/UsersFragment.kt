@@ -1,7 +1,6 @@
 package com.grind.goratest.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,8 @@ import com.grind.goratest.adapters.UsersAdapter
 import com.grind.goratest.models.User
 import com.grind.goratest.replaceFragment
 import com.grind.goratest.viewmodels.UsersViewModel
+import java.net.InetAddress
+import kotlin.concurrent.thread
 
 class UsersFragment: Fragment() {
 
@@ -35,7 +36,7 @@ class UsersFragment: Fragment() {
             UsersViewModel::class.java
         )
 
-        viewModel.usersData.observe({lifecycle}, {
+        viewModel.usersData.observe({ lifecycle }, {
             if (it != null) {
                 (recyclerView.adapter as UsersAdapter).itemsList.addAll(it)
                 (recyclerView.adapter as UsersAdapter).notifyDataSetChanged()
@@ -44,13 +45,17 @@ class UsersFragment: Fragment() {
             }
         })
 
-        viewModel.getUsersList()
+        if(isInternetAvailable()){
+            viewModel.getUsersList()
+        } else{
+            Toast.makeText(context, "Network is disabled", Toast.LENGTH_SHORT).show()
+        }
 
         return v
     }
 
     private fun configureRecyclerView(rv: RecyclerView){
-        rv.adapter = UsersAdapter(object : UsersAdapter.OnUserClickListener{
+        rv.adapter = UsersAdapter(object : UsersAdapter.OnUserClickListener {
             override fun onUserClick(user: User) {
                 val fragment = PicturesFragment().apply {
                     arguments = Bundle().apply { putInt("userId", user.id) }
@@ -60,5 +65,19 @@ class UsersFragment: Fragment() {
         })
 
         rv.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        var ipAddress: InetAddress? = null
+        val thread = thread(start = true) {
+            try {
+                ipAddress = InetAddress.getByName("google.com")
+            } catch (e: Exception) {
+                ipAddress = null
+            }
+
+        }
+        thread.join()
+        return ipAddress != null && !ipAddress!!.equals("")
     }
 }

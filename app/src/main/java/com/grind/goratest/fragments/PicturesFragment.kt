@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,10 +17,12 @@ import com.grind.goratest.adapters.PicturesAdapter
 import com.grind.goratest.toDp
 import com.grind.goratest.utils.PictureLoader
 import com.grind.goratest.viewmodels.PictureViewModel
+import kotlin.concurrent.thread
 
 class PicturesFragment: Fragment() {
 
     private lateinit var backButton: View
+    private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: PictureViewModel
 
@@ -31,6 +34,7 @@ class PicturesFragment: Fragment() {
     ): View? {
         val v = View.inflate(context, R.layout.fragment_pictures, null)
         backButton = v.findViewById(R.id.ll_back_button)
+        progressBar = v.findViewById(R.id.progress_bar)
         recyclerView = v.findViewById(R.id.rv_photos)
 
         configureRecyclerView(recyclerView)
@@ -41,11 +45,14 @@ class PicturesFragment: Fragment() {
         )
 
         viewModel.picturesData.observe({lifecycle}, Observer {
-            (recyclerView.adapter as PicturesAdapter).itemsList.addAll(it)
+            (recyclerView.adapter as PicturesAdapter).itemsList = it
+            progressBar.visibility = View.GONE
             (recyclerView.adapter as PicturesAdapter).notifyDataSetChanged()
         })
 
-        viewModel.getPicturesList(arguments?.getInt("userId")?: 0)
+        thread (start = true){
+            viewModel.getPicturesList(arguments?.getInt("userId")?: 0)
+        }
 
         return v
     }

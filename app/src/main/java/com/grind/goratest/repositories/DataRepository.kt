@@ -10,6 +10,7 @@ import org.json.JSONObject
 import java.net.URL
 import java.nio.charset.Charset
 import javax.net.ssl.HttpsURLConnection
+import kotlin.concurrent.thread
 
 class DataRepository {
 
@@ -79,49 +80,43 @@ class DataRepository {
 
     fun getUsersList(): List<User>? {
         var resultList: List<User>? = null
-        val thread = Thread(Runnable {
+        val thread = thread(start = true){
             val connection = configureHttpsConnection("$BASE_URL/users")
             connection.connect()
             if (connection.responseCode == HttpsURLConnection.HTTP_OK) {
                 val response = connection.inputStream.readBytes().toString(Charset.defaultCharset())
-                Log.i("URL", "$response")
                 resultList = parseUsers(response)
             }
 
-        })
-        thread.start()
+        }
         thread.join()
         return resultList
     }
 
     fun getAlbumsListByUserId(userId: Int): List<Album>? {
         var resultList: List<Album>? = null
-        val thread = Thread(Runnable {
+        val thread = thread(start = true){
             val connection = configureHttpsConnection("$BASE_URL/albums?userId=$userId")
             connection.connect()
             if (connection.responseCode == HttpsURLConnection.HTTP_OK) {
                 val response = connection.inputStream.readBytes().toString(Charset.defaultCharset())
-                Log.i("URL", "$response")
                 resultList = parseAlbums(response)
             }
-        })
-        thread.start()
+        }
         thread.join()
         return resultList
     }
 
     fun getPhotosListByAlbumId(albumId: Int): List<Picture>? {
         var resultList: List<Picture>? = null
-        val thread = Thread(Runnable {
+        val thread = thread(start = true){
             val connection = configureHttpsConnection("$BASE_URL/photos?albumId=$albumId")
             connection.connect()
             if (connection.responseCode == HttpsURLConnection.HTTP_OK) {
                 val response = connection.inputStream.readBytes().toString(Charset.defaultCharset())
-                Log.i("URL", "$response")
                 resultList = parsePhotos(response)
             }
-        })
-        thread.start()
+        }
         thread.join()
         return resultList
     }

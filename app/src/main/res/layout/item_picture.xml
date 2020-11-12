@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
 
         <ImageView
             android:id="@+id/imv_picture_container"
@@ -19,6 +20,16 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/imv_picture_container"
+            app:layout_constraintRight_toRightOf="@id/imv_picture_container"
+            app:layout_constraintTop_toTopOf="@id/imv_picture_container"
+            app:layout_constraintBottom_toBottomOf="@id/imv_picture_container"/>
+
 
         <TextView
             android:id="@+id/tv_title"
