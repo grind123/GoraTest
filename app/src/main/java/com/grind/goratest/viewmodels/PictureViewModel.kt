@@ -17,6 +17,7 @@ class PictureViewModel(): ViewModel() {
         albums?.parallelStream()?.forEach {
             resultList.addAll(repository.getPhotosListByAlbumId(it.id)!!)
         }
+        resultList.sortBy { it.id }
         (picturesData as MutableLiveData).postValue(resultList)
     }
 }
